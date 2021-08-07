@@ -31,3 +31,16 @@ def get_support_version():
     support_version = versions[2]
     log.debug('support version : %s' % support_version)
     return support_version
+
+def str_byte_convert():
+    """str to byte"""
+    a = b'hello'
+    b = 'world'
+
+    """str to byte"""
+    b.encode(encoding='utf-8')
+    bytes(b)
+
+    """byte to str"""
+    bytes.decode(b)
+    str(b, encoding='utf-8')
