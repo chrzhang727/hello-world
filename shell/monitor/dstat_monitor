@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# note: the dstat can write to excel auto
+
+cur_time=`date +"%m%d%H%M"`
+log_dir="logs_$cur_time"
+
+mkdir -p $log_dir
+
+interval=2
+
+nohup dstat -lcmsd --disk-wait --disk-svctm  -nrtg -o $log_dir/0_sys_overview $interval> /dev/null 2>&1 &
+
+pids=`supervisorctl status |grep 'RUNNING' | awk '{print $4}' |sed 's/,$//'`
+
+
+i=1
+for pid in ${pids[@]}
+do
+  proc=`ps --no-headers --pid $pid |awk '{print $4}'`
+  if [ $proc ]
+  then
+    nohup pidstat -druh -p $pid $interval |grep -vE "Time|$^" > $log_dir/${i}_${proc}${pid}_stat 2>&1 &
+  else
+    echo "Invalid pid $pid"
+  fi
+  i=`expr $i + 1`
+done
+
